@@ -1,0 +1,2619 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ферма PRO | Заработок</title>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --secondary: #8BC34A;
+            --accent: #FFC107;
+            --dark: #388E3C;
+            --light: #DCEDC8;
+            --text: #2E7D32;
+            --error: #F44336;
+            --coin: #FFD700;
+            --token: #9C27B0;
+            --premium: #2196F3;
+            --wheat: #F5DEB3;
+            --carrot: #FFA500;
+            --potato: #D2B48C;
+            --fertilizer: #795548;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+        }
+        
+        .game-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid var(--accent);
+        }
+        
+        h1 {
+            color: var(--dark);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .ad-notice {
+            background-color: #FFEB3B;
+            color: #333;
+            padding: 8px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            border: 1px dashed #FF9800;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+            background-color: var(--light);
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 16px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            font-size: 1.3em;
+            margin: 5px 0;
+        }
+        
+        .corn-count {
+            color: var(--dark);
+        }
+        
+        .wheat-count {
+            color: var(--wheat);
+        }
+        
+        .carrot-count {
+            color: var(--carrot);
+        }
+        
+        .potato-count {
+            color: var(--potato);
+        }
+        
+        .coin-count {
+            color: var(--coin);
+        }
+        
+        .token-count {
+            color: var(--token);
+        }
+        
+        .farm {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: rgba(139, 195, 74, 0.1);
+            border-radius: 15px;
+        }
+        
+        .field {
+            height: 80px;
+            width: 80px;
+            background-color: #8D6E63;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.3);
+            border: 2px solid #5D4037;
+        }
+        
+        .field:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .field.empty:hover {
+            background-color: #7B5D4B;
+        }
+        
+        .corn {
+            width: 30px;
+            height: 50px;
+            background: linear-gradient(to bottom, #FFEB3B, #FBC02D);
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            transform-origin: bottom center;
+            animation: grow 0.8s ease-out;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+        }
+        
+        .wheat {
+            width: 40px;
+            height: 60px;
+            background: linear-gradient(to bottom, #F5DEB3, #D2B48C);
+            border-radius: 5px;
+            position: relative;
+            transform-origin: bottom center;
+            animation: grow 0.8s ease-out;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+        }
+        
+        .carrot {
+            width: 30px;
+            height: 40px;
+            background: linear-gradient(to bottom, #FFA500, #FF8C00);
+            border-radius: 50% 50% 0 0;
+            position: relative;
+            transform-origin: bottom center;
+            animation: grow 0.8s ease-out;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+        }
+        
+        .potato {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(to bottom, #D2B48C, #A0522D);
+            border-radius: 50%;
+            position: relative;
+            transform-origin: bottom center;
+            animation: grow 0.8s ease-out;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+        }
+        
+        .corn.golden {
+            background: linear-gradient(to bottom, #FFD700, #FFA500);
+            box-shadow: 0 0 15px #FFD700;
+            animation: glow 2s infinite alternate;
+        }
+        
+        .corn.premium {
+            background: linear-gradient(to bottom, #2196F3, #1976D2);
+            box-shadow: 0 0 15px #2196F3;
+            animation: glow-blue 2s infinite alternate;
+        }
+        
+        .corn:before {
+            content: "";
+            position: absolute;
+            top: -8px;
+            left: 10px;
+            width: 10px;
+            height: 12px;
+            background: linear-gradient(to right, #7CB342, #558B2F);
+            border-radius: 5px;
+            transform: rotate(-20deg);
+        }
+        
+        .wheat:before {
+            content: "";
+            position: absolute;
+            top: -15px;
+            left: 5px;
+            width: 30px;
+            height: 20px;
+            background: linear-gradient(to right, #8FBC8F, #556B2F);
+            border-radius: 10px;
+        }
+        
+        .carrot:before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            width: 10px;
+            height: 15px;
+            background: linear-gradient(to right, #7CB342, #558B2F);
+            border-radius: 5px;
+        }
+        
+        .growth-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 6px;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 1s linear;
+            z-index: 1;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background-color: var(--primary);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 15px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 150px;
+            justify-content: center;
+        }
+        
+        button.coin-button {
+            background-color: var(--coin);
+            color: #333;
+        }
+        
+        button.token-button {
+            background-color: var(--token);
+            color: white;
+        }
+        
+        button.premium-button {
+            background-color: var(--premium);
+            color: white;
+        }
+        
+        button.fertilizer-button {
+            background-color: var(--fertilizer);
+            color: white;
+        }
+        
+        button:hover:not(:disabled) {
+            background-color: var(--dark);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        button.coin-button:hover:not(:disabled) {
+            background-color: #FFC000;
+        }
+        
+        button.token-button:hover:not(:disabled) {
+            background-color: #7B1FA2;
+        }
+        
+        button.premium-button:hover:not(:disabled) {
+            background-color: #1565C0;
+        }
+        
+        button.fertilizer-button:hover:not(:disabled) {
+            background-color: #5D4037;
+        }
+        
+        button:disabled {
+            background-color: #BDBDBD;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 5px;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--text);
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+            font-size: 1em;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .tab.active {
+            color: var(--dark);
+            border-bottom-color: var(--primary);
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+        
+        .tab:hover:not(.active) {
+            background-color: rgba(76, 175, 80, 0.05);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .market-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .market-item:hover {
+            transform: translateY(-3px);
+        }
+        
+        .market-item-info {
+            flex-grow: 1;
+            text-align: left;
+        }
+        
+        .market-item-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+        
+        .market-item-desc {
+            font-size: 0.9em;
+            color: #616161;
+        }
+        
+        .market-item-price {
+            font-size: 1em;
+            color: var(--coin);
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .withdraw-form {
+            background-color: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 1em;
+            color: var(--dark);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        .form-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+        
+        .withdraw-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #E3F2FD;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 0.95em;
+            border-left: 5px solid #2196F3;
+        }
+        
+        .token-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            font-size: 1em;
+            border: 1px solid rgba(156, 39, 176, 0.3);
+        }
+        
+        .upgrade {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            transition: transform 0.3s;
+            border-left: 5px solid var(--accent);
+        }
+        
+        .upgrade:hover {
+            transform: translateY(-3px);
+        }
+        
+        .upgrade-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.1em;
+        }
+        
+        .upgrade-desc {
+            font-size: 0.95em;
+            color: #616161;
+            margin-bottom: 15px;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transform: translateX(200%);
+            transition: transform 0.3s ease-out;
+            z-index: 1000;
+            max-width: 350px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .notification.coin-notification {
+            background-color: var(--coin);
+            color: #333;
+        }
+        
+        .notification.token-notification {
+            background-color: var(--token);
+            color: white;
+        }
+        
+        .notification.premium-notification {
+            background-color: var(--premium);
+            color: white;
+        }
+        
+        .notification.fertilizer-notification {
+            background-color: var(--fertilizer);
+            color: white;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .progress-bar {
+            height: 5px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: white;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .ad-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .ad-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .ad-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 3px solid var(--accent);
+            animation: pulse 2s infinite;
+        }
+        
+        .ad-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.3s;
+        }
+        
+        .ad-close:hover {
+            color: #333;
+        }
+        
+        .ad-timer {
+            margin-top: 15px;
+            font-size: 1em;
+            color: #666;
+        }
+        
+        .farmer-count {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--dark);
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .field-status {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            font-size: 0.7em;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        .seed-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            border-left: 5px solid var(--accent);
+        }
+        
+        .seed-item:hover {
+            transform: translateY(-3px);
+        }
+        
+        .seed-item-info {
+            flex-grow: 1;
+            text-align: left;
+        }
+        
+        .seed-item-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+        
+        .seed-item-desc {
+            font-size: 0.9em;
+            color: #616161;
+        }
+        
+        /* Стили для модального окна промокодов */
+        .promo-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .promo-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .promo-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 3px solid var(--accent);
+        }
+        
+        .promo-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.3s;
+        }
+        
+        .promo-close:hover {
+            color: #333;
+        }
+        
+        .promo-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            font-size: 16px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .promo-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .promo-button:hover {
+            background-color: var(--dark);
+            transform: translateY(-2px);
+        }
+        
+        .promo-info {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .promo-tab {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: var(--token);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+        
+        .promo-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .premium-timer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--premium);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 14px;
+            z-index: 100;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+        
+        /* Анимации */
+        @keyframes grow {
+            0% { transform: scaleY(0); opacity: 0; }
+            100% { transform: scaleY(1); opacity: 1; }
+        }
+        
+        @keyframes glow {
+            0% { box-shadow: 0 0 10px #FFD700; }
+            100% { box-shadow: 0 0 20px #FFD700; }
+        }
+        
+        @keyframes glow-blue {
+            0% { box-shadow: 0 0 10px #2196F3; }
+            100% { box-shadow: 0 0 20px #2196F3; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        .bounce {
+            animation: bounce 0.5s;
+        }
+        
+        @media (max-width: 768px) {
+            .farm {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .promo-tab {
+                top: 10px;
+                right: 10px;
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .farm {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .game-container {
+                padding: 15px;
+            }
+            
+            .field {
+                height: 70px;
+                width: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1><span>🌽</span> Ферма PRO <span>🚜</span></h1>
+        
+        <div class="ad-notice">
+            Рекламу на сайте можно купить у @W2SP3R
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="farm">Ферма</div>
+            <div class="tab" data-tab="market">Рынок</div>
+            <div class="tab" data-tab="shop">Магазин</div>
+            <div class="tab" data-tab="upgrades">Улучшения</div>
+            <div class="tab" data-tab="withdraw">Вывод</div>
+        </div>
+        
+        <div class="tab-content active" id="farm-tab">
+            <div class="stats">
+                <div class="stat">
+                    <div>Кукуруза</div>
+                    <div class="stat-value corn-count" id="corn-count">0</div>
+                    <div>🌽</div>
+                </div>
+                <div class="stat">
+                    <div>Пшеница</div>
+                    <div class="stat-value wheat-count" id="wheat-count">0</div>
+                    <div>🌾</div>
+                </div>
+                <div class="stat">
+                    <div>Морковь</div>
+                    <div class="stat-value carrot-count" id="carrot-count">0</div>
+                    <div>🥕</div>
+                </div>
+                <div class="stat">
+                    <div>Картофель</div>
+                    <div class="stat-value potato-count" id="potato-count">0</div>
+                    <div>🥔</div>
+                </div>
+                <div class="stat">
+                    <div>Монеты</div>
+                    <div class="stat-value coin-count" id="coin-count">0</div>
+                    <div>🪙</div>
+                </div>
+                <div class="stat">
+                    <div>Токены</div>
+                    <div class="stat-value token-count" id="token-count">0</div>
+                    <div>🔶</div>
+                </div>
+            </div>
+            
+            <div class="farm" id="farm">
+                <!-- 25 полей будут добавлены через JavaScript -->
+            </div>
+            
+            <div class="buttons">
+                <button id="plant-all" class="coin-button">
+                    <span>🌱</span> Посадить все
+                </button>
+                <button id="buy-token" class="token-button">
+                    <span>🔶</span> Купить токен (<span id="token-cost">5000</span>🪙)
+                </button>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="market-tab">
+            <h2>Рынок</h2>
+            
+            <div class="market-item">
+                <div class="market-item-info">
+                    <div class="market-item-title">Продать кукурузу</div>
+                    <div class="market-item-desc">Цена: 1🌽 = 1🪙</div>
+                </div>
+                <div class="market-item-quantity">
+                    <button id="sell-corn" class="coin-button">
+                        Продать все
+                    </button>
+                </div>
+            </div>
+            
+            <div class="market-item">
+                <div class="market-item-info">
+                    <div class="market-item-title">Продать пшеницу</div>
+                    <div class="market-item-desc">Цена: 1🌾 = 2🪙</div>
+                </div>
+                <div class="market-item-quantity">
+                    <button id="sell-wheat" class="coin-button">
+                        Продать все
+                    </button>
+                </div>
+            </div>
+            
+            <div class="market-item">
+                <div class="market-item-info">
+                    <div class="market-item-title">Продать морковь</div>
+                    <div class="market-item-desc">Цена: 1🥕 = 3🪙</div>
+                </div>
+                <div class="market-item-quantity">
+                    <button id="sell-carrot" class="coin-button">
+                        Продать все
+                    </button>
+                </div>
+            </div>
+            
+            <div class="market-item">
+                <div class="market-item-info">
+                    <div class="market-item-title">Продать картофель</div>
+                    <div class="market-item-desc">Цена: 1🥔 = 4🪙</div>
+                </div>
+                <div class="market-item-quantity">
+                    <button id="sell-potato" class="coin-button">
+                        Продать все
+                    </button>
+                </div>
+            </div>
+            
+            <div class="market-item">
+                <div class="market-item-info">
+                    <div class="market-item-title">Купить токен</div>
+                    <div class="market-item-desc">1 токен = 0.50$ при выводе</div>
+                </div>
+                <div class="market-item-quantity">
+                    <button id="buy-token-market" class="token-button">
+                        Купить (5000🪙)
+                    </button>
+                </div>
+            </div>
+            
+            <div class="market-item">
+                <div class="market-item-info">
+                    <div class="market-item-title">Продать токены</div>
+                    <div class="market-item-desc">Обменяйте токены на монеты (1🔶 = 4000🪙)</div>
+                </div>
+                <div class="market-item-quantity">
+                    <button id="sell-tokens" class="coin-button" disabled>
+                        Продать (4000🪙)
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="shop-tab">
+            <h2>Магазин семян</h2>
+            
+            <div class="seed-item">
+                <div class="seed-item-info">
+                    <div class="seed-item-title">Семена кукурузы (5 шт)</div>
+                    <div class="seed-item-desc">Время роста: 3 мин. Доход: 1🪙 (окупаемость: 5🌽)</div>
+                </div>
+                <div class="seed-item-quantity">
+                    <button id="buy-corn-seeds" class="coin-button">
+                        Купить (5🪙)
+                    </button>
+                </div>
+            </div>
+            
+            <div class="seed-item">
+                <div class="seed-item-info">
+                    <div class="seed-item-title">Семена пшеницы (3 шт)</div>
+                    <div class="seed-item-desc">Время роста: 5 мин. Доход: 2🪙 (окупаемость: 2🌾)</div>
+                </div>
+                <div class="seed-item-quantity">
+                    <button id="buy-wheat-seeds" class="coin-button">
+                        Купить (6🪙)
+                    </button>
+                </div>
+            </div>
+            
+            <div class="seed-item">
+                <div class="seed-item-info">
+                    <div class="seed-item-title">Семена моркови (2 шт)</div>
+                    <div class="seed-item-desc">Время роста: 7 мин. Доход: 3🪙 (окупаемость: 2🥕)</div>
+                </div>
+                <div class="seed-item-quantity">
+                    <button id="buy-carrot-seeds" class="coin-button">
+                        Купить (6🪙)
+                    </button>
+                </div>
+            </div>
+            
+            <div class="seed-item">
+                <div class="seed-item-info">
+                    <div class="seed-item-title">Семена картофеля (1 шт)</div>
+                    <div class="seed-item-desc">Время роста: 10 мин. Доход: 4🪙 (окупаемость: 1🥔)</div>
+                </div>
+                <div class="seed-item-quantity">
+                    <button id="buy-potato-seeds" class="coin-button">
+                        Купить (4🪙)
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="upgrades-tab">
+            <h2>Улучшения</h2>
+            
+            <div class="upgrade">
+                <div class="upgrade-title">
+                    <span>⏱️ Ускоренный рост</span>
+                    <span>50🪙</span>
+                </div>
+                <div class="upgrade-desc">Уменьшает время роста растений на 25%</div>
+                <button id="buy-fast-growth" class="coin-button">Купить</button>
+            </div>
+            
+            <div class="upgrade">
+                <div class="upgrade-title">
+                    <span>👨‍🌾 Фермер</span>
+                    <span>150🪙</span>
+                </div>
+                <div class="upgrade-desc">Автоматически сажает и собирает растения (макс. 5 фермеров)</div>
+                <button id="buy-farmer" class="coin-button">Купить (<span id="farmer-count">0</span>/5)</button>
+            </div>
+            
+            <div class="upgrade">
+                <div class="upgrade-title">
+                    <span>🌟 Золотые семена</span>
+                    <span>200🪙</span>
+                </div>
+                <div class="upgrade-desc">Увеличивает шанс золотых растений до 15% (x5 доход)</div>
+                <button id="buy-golden-seeds" class="coin-button">Купить</button>
+            </div>
+            
+            <div class="upgrade">
+                <div class="upgrade-title">
+                    <span>🔋 Автополив</span>
+                    <span>300🪙</span>
+                </div>
+                <div class="upgrade-desc">Уменьшает время роста еще на 35%</div>
+                <button id="buy-auto-water" class="coin-button">Купить</button>
+            </div>
+            
+            <div class="upgrade">
+                <div class="upgrade-title">
+                    <span>🚜 Трактор</span>
+                    <span>500🪙</span>
+                </div>
+                <div class="upgrade-desc">Автоматически собирает всю созревшую продукцию</div>
+                <button id="buy-tractor" class="coin-button">Купить</button>
+            </div>
+            
+            <div class="upgrade">
+                <div class="upgrade-title">
+                    <span>🏆 Премиум семена</span>
+                    <span>1000🪙</span>
+                </div>
+                <div class="upgrade-desc">Увеличивает доход от растений в 2 раза и дает шанс премиум растений</div>
+                <button id="buy-premium-seeds" class="coin-button">Купить</button>
+            </div>
+            
+            <div class="upgrade">
+                <div class="upgrade-title">
+                    <span>🌧️ Ирригационная система</span>
+                    <span>1500🪙</span>
+                </div>
+                <div class="upgrade-desc">Уменьшает время роста еще на 50%</div>
+                <button id="buy-irrigation" class="coin-button">Купить</button>
+            </div>
+            
+            <div class="upgrade">
+                <div class="upgrade-title">
+                    <span>🚚 Грузовик</span>
+                    <span>2000🪙</span>
+                </div>
+                <div class="upgrade-desc">Автоматически продает всю собранную продукцию</div>
+                <button id="buy-truck" class="coin-button">Купить</button>
+            </div>
+            
+            <div class="upgrade">
+                <div class="upgrade-title">
+                    <span>🧪 Удобрения</span>
+                    <span>2500🪙</span>
+                </div>
+                <div class="upgrade-desc">Увеличивает доход от всех растений на 50%</div>
+                <button id="buy-fertilizer" class="fertilizer-button">Купить</button>
+            </div>
+            
+            <div class="upgrade">
+                <div class="upgrade-title">
+                    <span>🏭 Теплицы</span>
+                    <span>3000🪙</span>
+                </div>
+                <div class="upgrade-desc">Уменьшает время роста еще на 40%</div>
+                <button id="buy-greenhouse" class="coin-button">Купить</button>
+            </div>
+            
+            <div class="upgrade">
+                <div class="upgrade-title">
+                    <span>🧬 Генетическая модификация</span>
+                    <span>5000🪙</span>
+                </div>
+                <div class="upgrade-desc">Увеличивает шанс золотых растений до 25%</div>
+                <button id="buy-genetics" class="coin-button">Купить</button>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="withdraw-tab">
+            <h2>Вывод средств</h2>
+            
+            <div class="withdraw-info">
+                <p><strong>1 токен (🔶) = 0.50$</strong></p>
+                <p>Для вывода средств:</p>
+                <ol>
+                    <li>Накопите токены (можно купить за 5000🪙)</li>
+                    <li>Укажите ваш Telegram username</li>
+                    <li>Нажмите кнопку "Вывести"</li>
+                </ol>
+                <p>Администратор свяжется с вами для выплаты в течение 24 часов.</p>
+                <p><strong>Минимальная сумма вывода: 10 токенов ($5)</strong></p>
+            </div>
+            
+            <div class="token-item">
+                <div>
+                    <strong>Ваши токены:</strong> <span id="withdraw-token-count">0</span> 🔶
+                </div>
+                <div>
+                    <strong>Сумма к выплате:</strong> $<span id="withdraw-amount">0.00</span>
+                </div>
+            </div>
+            
+            <div class="withdraw-form">
+                <div class="form-group">
+                    <label for="telegram-username">Telegram username (без @)</label>
+                    <input type="text" id="telegram-username" placeholder="ваш_username">
+                </div>
+                
+                <div class="form-group">
+                    <label for="withdraw-tokens">Количество токенов (мин. 10)</label>
+                    <input type="number" id="withdraw-tokens" min="10" value="10">
+                </div>
+                
+                <button id="withdraw-button" class="token-button" disabled>
+                    Вывести <span id="withdraw-tokens-count">10</span> токен(ов) на $<span id="withdraw-tokens-amount">5.00</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Кнопка для ввода промокодов -->
+    <div class="promo-tab" id="promo-tab">Промокод</div>
+    
+    <!-- Таймер премиум-статуса -->
+    <div class="premium-timer" id="premium-timer">
+        Без рекламы: <span id="premium-time">00:00:00</span>
+    </div>
+    
+    <!-- Модальное окно для ввода промокодов -->
+    <div class="promo-modal" id="promo-modal">
+        <div class="promo-content">
+            <button class="promo-close" id="promo-close">✕</button>
+            <h3>Активировать промокод</h3>
+            <p>Введите промокод для получения бонусов</p>
+            <input type="text" class="promo-input" id="promo-input" placeholder="Введите промокод">
+            <button class="promo-button" id="promo-activate">Активировать</button>
+            <div class="promo-info">
+                Примеры промокодов: AAA1, NAI2J
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">
+        <div id="notification-text"></div>
+        <div class="progress-bar">
+            <div class="progress" id="notification-progress"></div>
+        </div>
+    </div>
+    
+    <div class="notification coin-notification" id="coin-notification">
+        <div id="coin-notification-text"></div>
+        <div class="progress-bar">
+            <div class="progress" id="coin-notification-progress"></div>
+        </div>
+    </div>
+    
+    <div class="notification token-notification" id="token-notification">
+        <div id="token-notification-text"></div>
+        <div class="progress-bar">
+            <div class="progress" id="token-notification-progress"></div>
+        </div>
+    </div>
+    
+    <div class="notification premium-notification" id="premium-notification">
+        <div id="premium-notification-text"></div>
+        <div class="progress-bar">
+            <div class="progress" id="premium-notification-progress"></div>
+        </div>
+    </div>
+    
+    <div class="notification fertilizer-notification" id="fertilizer-notification">
+        <div id="fertilizer-notification-text"></div>
+        <div class="progress-bar">
+            <div class="progress" id="fertilizer-notification-progress"></div>
+        </div>
+    </div>
+    
+    <div class="ad-modal" id="ad-modal">
+        <div class="ad-content">
+            <button class="ad-close" id="ad-close" disabled>✕ <span id="ad-timer">10</span>с</button>
+            <h3>Подпишитесь на разработчика!</h3>
+            <p>Читайте последние новости о проекте и получайте бонусы</p>
+            <a href="https://t.me/pythonDick" target="_blank" style="color: #2A5885; font-weight: bold;">https://t.me/pythonDick</a>
+            <div class="ad-timer">Закрыть через: <span id="ad-counter">10</span> сек</div>
+        </div>
+    </div>
+    
+    <div class="ad-modal" id="ad-modal-2">
+        <div class="ad-content">
+            <button class="ad-close" id="ad-close-2" disabled>✕ <span id="ad-timer-2">10</span>с</button>
+            <h3>Сдача вц в аренду</h3>
+            <p>Сдайте в аренду свой ватцап</p>
+            <a href="https://t.me/ad_CornFarm/3" target="_blank" style="color: #2A5885; font-weight: bold;">https://t.me/ad_CornFarm/3</a>
+            <div class="ad-timer">Закрыть через: <span id="ad-counter-2">10</span> сек</div>
+        </div>
+    </div>
+    
+    <script>
+        // Игровые переменные
+        const gameState = {
+            corn: 0,
+            wheat: 0,
+            carrot: 0,
+            potato: 0,
+            coins: 0,
+            tokens: 0,
+            totalTokens: 0,
+            tokenCost: 5000,
+            seeds: {
+                corn: 5,
+                wheat: 5,
+                carrot: 0,
+                potato: 0
+            },
+            baseGrowthTime: {
+                corn: 180000, // 3 минуты
+                wheat: 300000, // 5 минут
+                carrot: 420000, // 7 минут
+                potato: 600000 // 10 минут
+            },
+            growthTime: {
+                corn: 180000,
+                wheat: 300000,
+                carrot: 420000,
+                potato: 600000
+            },
+            cropValue: {
+                corn: 1,
+                wheat: 2,
+                carrot: 3,
+                potato: 4
+            },
+            seedCost: {
+                corn: 5,
+                wheat: 6,
+                carrot: 6,
+                potato: 4
+            },
+            seedPackSize: {
+                corn: 5,
+                wheat: 3,
+                carrot: 2,
+                potato: 1
+            },
+            goldenChance: 0.05,
+            premiumChance: 0,
+            farmers: 0,
+            hasTractor: false,
+            hasTruck: false,
+            premiumSeeds: false,
+            hasFertilizer: false,
+            hasGreenhouse: false,
+            hasGenetics: false,
+            upgrades: {
+                fastGrowth: false,
+                goldenSeeds: false,
+                autoWater: false,
+                tractor: false,
+                premiumSeeds: false,
+                irrigation: false,
+                truck: false,
+                fertilizer: false,
+                greenhouse: false,
+                genetics: false
+            },
+            fields: Array(25).fill().map(() => ({
+                hasCrop: false,
+                cropType: null,
+                plantedAt: 0,
+                isGolden: false,
+                isPremium: false
+            })),
+            totalWithdrawn: 0,
+            lastAdTime: 0,
+            adDisabledUntil: 0, // Время, до которого отключена реклама
+            usedPromoCodes: [], // Использованные промокоды
+            currentAd: 0 // Текущая реклама (0 или 1)
+        };
+        
+        // Промокоды
+        const PROMO_CODES = {
+            "WASPER": { 
+                type: "tokens", 
+                value: 1, 
+                message: "Промокод активирован! Получено 1 токен 🔶" 
+            },
+            "BONYS1": { 
+                type: "coins", 
+                value: 150, 
+                message: "Промокод активирован! Получено 150 монет 🪙" 
+            },
+            "NOAD": { 
+                type: "no_ad", 
+                value: 600000, // 1 час в миллисекундах
+                message: "Реклама отключена на 10 минут! 🚫" 
+            }
+        };
+        
+        // Элементы DOM
+        const elements = {
+            cornCount: document.getElementById('corn-count'),
+            wheatCount: document.getElementById('wheat-count'),
+            carrotCount: document.getElementById('carrot-count'),
+            potatoCount: document.getElementById('potato-count'),
+            coinCount: document.getElementById('coin-count'),
+            tokenCount: document.getElementById('token-count'),
+            farm: document.getElementById('farm'),
+            sellCornBtn: document.getElementById('sell-corn'),
+            sellWheatBtn: document.getElementById('sell-wheat'),
+            sellCarrotBtn: document.getElementById('sell-carrot'),
+            sellPotatoBtn: document.getElementById('sell-potato'),
+            buyTokenBtn: document.getElementById('buy-token'),
+            buyTokenMarketBtn: document.getElementById('buy-token-market'),
+            sellTokensBtn: document.getElementById('sell-tokens'),
+            tokenCost: document.getElementById('token-cost'),
+            withdrawTokenCount: document.getElementById('withdraw-token-count'),
+            withdrawAmount: document.getElementById('withdraw-amount'),
+            telegramUsername: document.getElementById('telegram-username'),
+            withdrawTokens: document.getElementById('withdraw-tokens'),
+            withdrawButton: document.getElementById('withdraw-button'),
+            withdrawTokensCount: document.getElementById('withdraw-tokens-count'),
+            withdrawTokensAmount: document.getElementById('withdraw-tokens-amount'),
+            tabs: document.querySelectorAll('.tab'),
+            tabContents: document.querySelectorAll('.tab-content'),
+            notification: document.getElementById('notification'),
+            notificationText: document.getElementById('notification-text'),
+            notificationProgress: document.getElementById('notification-progress'),
+            coinNotification: document.getElementById('coin-notification'),
+            coinNotificationText: document.getElementById('coin-notification-text'),
+            coinNotificationProgress: document.getElementById('coin-notification-progress'),
+            tokenNotification: document.getElementById('token-notification'),
+            tokenNotificationText: document.getElementById('token-notification-text'),
+            tokenNotificationProgress: document.getElementById('token-notification-progress'),
+            premiumNotification: document.getElementById('premium-notification'),
+            premiumNotificationText: document.getElementById('premium-notification-text'),
+            premiumNotificationProgress: document.getElementById('premium-notification-progress'),
+            fertilizerNotification: document.getElementById('fertilizer-notification'),
+            fertilizerNotificationText: document.getElementById('fertilizer-notification-text'),
+            fertilizerNotificationProgress: document.getElementById('fertilizer-notification-progress'),
+            buyFastGrowthBtn: document.getElementById('buy-fast-growth'),
+            buyFarmerBtn: document.getElementById('buy-farmer'),
+            buyGoldenSeedsBtn: document.getElementById('buy-golden-seeds'),
+            buyAutoWaterBtn: document.getElementById('buy-auto-water'),
+            buyTractorBtn: document.getElementById('buy-tractor'),
+            buyPremiumSeedsBtn: document.getElementById('buy-premium-seeds'),
+            buyIrrigationBtn: document.getElementById('buy-irrigation'),
+            buyTruckBtn: document.getElementById('buy-truck'),
+            buyFertilizerBtn: document.getElementById('buy-fertilizer'),
+            buyGreenhouseBtn: document.getElementById('buy-greenhouse'),
+            buyGeneticsBtn: document.getElementById('buy-genetics'),
+            farmerCount: document.getElementById('farmer-count'),
+            plantAllBtn: document.getElementById('plant-all'),
+            buyCornSeedsBtn: document.getElementById('buy-corn-seeds'),
+            buyWheatSeedsBtn: document.getElementById('buy-wheat-seeds'),
+            buyCarrotSeedsBtn: document.getElementById('buy-carrot-seeds'),
+            buyPotatoSeedsBtn: document.getElementById('buy-potato-seeds'),
+            adModal: document.getElementById('ad-modal'),
+            adModal2: document.getElementById('ad-modal-2'),
+            adCloseBtn: document.getElementById('ad-close'),
+            adCloseBtn2: document.getElementById('ad-close-2'),
+            adTimer: document.getElementById('ad-timer'),
+            adTimer2: document.getElementById('ad-timer-2'),
+            adCounter: document.getElementById('ad-counter'),
+            adCounter2: document.getElementById('ad-counter-2'),
+            promoTab: document.getElementById('promo-tab'),
+            promoModal: document.getElementById('promo-modal'),
+            promoClose: document.getElementById('promo-close'),
+            promoInput: document.getElementById('promo-input'),
+            promoActivate: document.getElementById('promo-activate'),
+            premiumTimer: document.getElementById('premium-timer'),
+            premiumTime: document.getElementById('premium-time')
+        };
+        
+        // Инициализация игры
+        function initGame() {
+            // Загрузка сохраненной игры
+            loadGame();
+            
+            // Создание полей
+            renderFarm();
+            
+            // Обновление статистики
+            updateStats();
+            
+            // Запуск игрового цикла
+            setInterval(gameLoop, 1000);
+            
+            // Запуск рекламного таймера (раз в 2 минуты)
+            setInterval(checkAds, 1000);
+            
+            // Запуск таймера премиум-статуса
+            setInterval(updatePremiumTimer, 1000);
+            
+            // Показ приветственного сообщения
+            showNotification('Добро пожаловать на ферму! Сажайте растения и зарабатывайте!');
+        }
+        
+        // Проверка рекламы
+        function checkAds() {
+            const now = Date.now();
+            if (now - gameState.lastAdTime >= 120000 && now >= gameState.adDisabledUntil) {
+                showAd();
+            }
+        }
+        
+        // Обновление таймера премиум-статуса
+        function updatePremiumTimer() {
+            const now = Date.now();
+            if (now < gameState.adDisabledUntil) {
+                const timeLeft = gameState.adDisabledUntil - now;
+                const hours = Math.floor(timeLeft / 3600000);
+                const minutes = Math.floor((timeLeft % 3600000) / 60000);
+                const seconds = Math.floor((timeLeft % 60000) / 1000);
+                
+                elements.premiumTime.textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                elements.premiumTimer.style.display = 'flex';
+            } else {
+                elements.premiumTimer.style.display = 'none';
+            }
+        }
+        
+        // Игровой цикл
+        function gameLoop() {
+            updateFields();
+            farmerWork();
+            tractorWork();
+            truckWork();
+            saveGame();
+        }
+        
+        // Работа фермеров
+        function farmerWork() {
+            if (gameState.farmers > 0) {
+                // Фермеры собирают созревшие растения
+                gameState.fields.forEach((field, index) => {
+                    if (field.hasCrop && Date.now() - field.plantedAt >= gameState.growthTime[field.cropType]) {
+                        harvestCrop(index);
+                    }
+                });
+                
+                // Фермеры сажают новые растения
+                const emptyFields = gameState.fields.filter(f => !f.hasCrop);
+                if (emptyFields.length > 0) {
+                    // Каждый фермер может посадить 1 растение в секунду
+                    for (let i = 0; i < Math.min(gameState.farmers, emptyFields.length); i++) {
+                        const randomIndex = Math.floor(Math.random() * emptyFields.length);
+                        const fieldIndex = gameState.fields.indexOf(emptyFields[randomIndex]);
+                        
+                        // Выбираем случайное семя, которое есть у игрока
+                        const availableSeeds = [];
+                        for (const [type, count] of Object.entries(gameState.seeds)) {
+                            if (count > 0) availableSeeds.push(type);
+                        }
+                        
+                        if (availableSeeds.length > 0) {
+                            const seedType = availableSeeds[Math.floor(Math.random() * availableSeeds.length)];
+                            plantCrop(fieldIndex, seedType);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Работа трактора
+        function tractorWork() {
+            if (gameState.hasTractor) {
+                // Трактор собирает всю созревшую продукцию
+                gameState.fields.forEach((field, index) => {
+                    if (field.hasCrop && Date.now() - field.plantedAt >= gameState.growthTime[field.cropType]) {
+                        harvestCrop(index);
+                    }
+                });
+            }
+        }
+        
+        // Работа грузовика
+        function truckWork() {
+            if (gameState.hasTruck) {
+                // Автоматически продаем всю продукцию
+                let totalCoins = 0;
+                
+                if (gameState.corn > 0) {
+                    totalCoins += gameState.corn * gameState.cropValue.corn * (gameState.hasFertilizer ? 1.5 : 1);
+                    gameState.corn = 0;
+                }
+                
+                if (gameState.wheat > 0) {
+                    totalCoins += gameState.wheat * gameState.cropValue.wheat * (gameState.hasFertilizer ? 1.5 : 1);
+                    gameState.wheat = 0;
+                }
+                
+                if (gameState.carrot > 0) {
+                    totalCoins += gameState.carrot * gameState.cropValue.carrot * (gameState.hasFertilizer ? 1.5 : 1);
+                    gameState.carrot = 0;
+                }
+                
+                if (gameState.potato > 0) {
+                    totalCoins += gameState.potato * gameState.cropValue.potato * (gameState.hasFertilizer ? 1.5 : 1);
+                    gameState.potato = 0;
+                }
+                
+                if (totalCoins > 0) {
+                    gameState.coins += totalCoins;
+                    showCoinNotification(`Грузовик продал продукцию за ${totalCoins} монет!`, 2000);
+                }
+            }
+        }
+        
+        // Обновление состояния полей
+        function updateFields() {
+            const now = Date.now();
+            
+            gameState.fields.forEach((field, index) => {
+                if (field.hasCrop) {
+                    const fieldEl = document.querySelector(`.field[data-index="${index}"]`);
+                    if (fieldEl) {
+                        const progressEl = fieldEl.querySelector('.growth-progress');
+                        if (progressEl) {
+                            const progress = Math.min(1, (now - field.plantedAt) / gameState.growthTime[field.cropType]);
+                            progressEl.style.width = `${progress * 100}%`;
+                            
+                            // Обновление статуса поля
+                            const statusEl = fieldEl.querySelector('.field-status');
+                            if (!statusEl) {
+                                const newStatusEl = document.createElement('div');
+                                newStatusEl.className = 'field-status';
+                                fieldEl.appendChild(newStatusEl);
+                            }
+                            
+                            const timeLeft = Math.max(0, gameState.growthTime[field.cropType] - (now - field.plantedAt));
+                            const minutes = Math.floor(timeLeft / 60000);
+                            const seconds = Math.floor((timeLeft % 60000) / 1000);
+                            fieldEl.querySelector('.field-status').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Рендер фермы
+        function renderFarm() {
+            elements.farm.innerHTML = '';
+            
+            gameState.fields.forEach((field, index) => {
+                const fieldEl = document.createElement('div');
+                fieldEl.className = `field ${field.hasCrop ? '' : 'empty'}`;
+                fieldEl.dataset.index = index;
+                
+                if (field.hasCrop) {
+                    const progress = Math.min(1, (Date.now() - field.plantedAt) / gameState.growthTime[field.cropType]);
+                    
+                    let cropClass = '';
+                    if (field.isPremium) cropClass = 'premium';
+                    else if (field.isGolden) cropClass = 'golden';
+                    
+                    let cropElement = '';
+                    switch(field.cropType) {
+                        case 'corn':
+                            cropElement = `<div class="corn ${cropClass}"></div>`;
+                            break;
+                        case 'wheat':
+                            cropElement = `<div class="wheat ${cropClass}"></div>`;
+                            break;
+                        case 'carrot':
+                            cropElement = `<div class="carrot ${cropClass}"></div>`;
+                            break;
+                        case 'potato':
+                            cropElement = `<div class="potato ${cropClass}"></div>`;
+                            break;
+                    }
+                    
+                    fieldEl.innerHTML = `
+                        ${cropElement}
+                        <div class="growth-progress" style="width: ${progress * 100}%"></div>
+                        <div class="field-status">${formatTime(gameState.growthTime[field.cropType] - (Date.now() - field.plantedAt))}</div>
+                    `;
+                }
+                
+                fieldEl.addEventListener('click', () => handleFieldClick(index));
+                elements.farm.appendChild(fieldEl);
+            });
+        }
+        
+        // Форматирование времени
+        function formatTime(ms) {
+            const timeLeft = Math.max(0, ms);
+            const minutes = Math.floor(timeLeft / 60000);
+            const seconds = Math.floor((timeLeft % 60000) / 1000);
+            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        // Обработка клика по полю
+        function handleFieldClick(index) {
+            const field = gameState.fields[index];
+            const now = Date.now();
+            
+            if (field.hasCrop) {
+                // Проверяем, выросло ли растение
+                if (now - field.plantedAt >= gameState.growthTime[field.cropType]) {
+                    // Сбор урожая
+                    harvestCrop(index);
+                } else {
+                    showNotification('Растение еще не выросло! Подождите немного.');
+                    const fieldEl = document.querySelector(`.field[data-index="${index}"]`);
+                    if (fieldEl) {
+                        fieldEl.classList.add('shake');
+                        setTimeout(() => fieldEl.classList.remove('shake'), 500);
+                    }
+                }
+            } else {
+                // Показываем меню выбора семян
+                selectSeedForPlanting(index);
+            }
+        }
+        
+        // Выбор семян для посадки
+        function selectSeedForPlanting(index) {
+            const availableSeeds = [];
+            for (const [type, count] of Object.entries(gameState.seeds)) {
+                if (count > 0) availableSeeds.push(type);
+            }
+            
+            if (availableSeeds.length === 0) {
+                showNotification('У вас нет семян для посадки! Купите семена в магазине.');
+                return;
+            }
+            
+            // Если есть только один тип семян, сажаем его
+            if (availableSeeds.length === 1) {
+                plantCrop(index, availableSeeds[0]);
+                return;
+            }
+            
+            // Создаем меню выбора семян
+            const seedMenu = document.createElement('div');
+            seedMenu.className = 'seed-menu';
+            seedMenu.style.position = 'fixed';
+            seedMenu.style.top = '50%';
+            seedMenu.style.left = '50%';
+            seedMenu.style.transform = 'translate(-50%, -50%)';
+            seedMenu.style.backgroundColor = 'white';
+            seedMenu.style.padding = '20px';
+            seedMenu.style.borderRadius = '10px';
+            seedMenu.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
+            seedMenu.style.zIndex = '1000';
+            
+            seedMenu.innerHTML = `
+                <h3 style="margin-top: 0;">Выберите семена для посадки</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    ${availableSeeds.map(type => `
+                        <button 
+                            style="padding: 10px; border: none; border-radius: 5px; background: #4CAF50; color: white; cursor: pointer;"
+                            onclick="plantCrop(${index}, '${type}'); document.body.removeChild(this.parentNode.parentNode.parentNode);"
+                        >
+                            ${getCropName(type)} (${gameState.seeds[type]} шт)
+                        </button>
+                    `).join('')}
+                    <button 
+                        style="grid-column: 1 / -1; padding: 10px; border: none; border-radius: 5px; background: #F44336; color: white; cursor: pointer;"
+                        onclick="document.body.removeChild(this.parentNode.parentNode)"
+                    >
+                        Отмена
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(seedMenu);
+        }
+        
+        // Получение названия растения по типу
+        function getCropName(type) {
+            switch(type) {
+                case 'corn': return 'Кукуруза';
+                case 'wheat': return 'Пшеница';
+                case 'carrot': return 'Морковь';
+                case 'potato': return 'Картофель';
+                default: return type;
+            }
+        }
+        
+        // Посадка растения
+        function plantCrop(index, cropType) {
+            if (gameState.seeds[cropType] <= 0) {
+                showNotification(`У вас нет семян ${getCropName(cropType)}!`);
+                return;
+            }
+            
+            const isGolden = Math.random() < gameState.goldenChance;
+            const isPremium = gameState.premiumSeeds && Math.random() < 0.1; // 10% шанс премиум растения
+            
+            gameState.fields[index] = {
+                hasCrop: true,
+                cropType: cropType,
+                plantedAt: Date.now(),
+                isGolden: isGolden && !isPremium, // Премиум растение не может быть золотым
+                isPremium: isPremium
+            };
+            
+            gameState.seeds[cropType] -= 1;
+            
+            renderFarm();
+            showNotification(`Посажена ${getCropName(cropType)}! Скоро созреет.`);
+            updateStats();
+            saveGame();
+        }
+        
+        // Посадка всех свободных полей
+        function plantAllCorn() {
+            let planted = 0;
+            const availableSeeds = [];
+            for (const [type, count] of Object.entries(gameState.seeds)) {
+                if (count > 0) availableSeeds.push(type);
+            }
+            
+            if (availableSeeds.length === 0) {
+                showNotification('У вас нет семян для посадки! Купите семена в магазине.');
+                return;
+            }
+            
+            gameState.fields.forEach((field, index) => {
+                if (!field.hasCrop && availableSeeds.length > 0) {
+                    // Выбираем первый доступный тип семян
+                    const seedType = availableSeeds[0];
+                    if (gameState.seeds[seedType] > 0) {
+                        plantCrop(index, seedType);
+                        planted++;
+                    }
+                }
+            });
+            
+            if (planted > 0) {
+                showNotification(`Посажено ${planted} растений!`);
+            } else {
+                showNotification('Нет свободных полей для посадки!');
+            }
+        }
+        
+        // Сбор урожая
+        function harvestCrop(index) {
+            const field = gameState.fields[index];
+            let cropEarned = gameState.premiumSeeds ? 2 : 1; // Премиум семена дают x2 доход
+            
+            if (field.isPremium) {
+                cropEarned *= 3; // Премиум растение дает x3
+                showNotification('Урожай! Вы собрали премиум растение! 💎', 3000);
+            } else if (field.isGolden) {
+                cropEarned *= 5; // Золотое растение дает x5
+                showNotification('Урожай! Вы собрали золотое растение! 🌟', 3000);
+            } else {
+                showNotification(`Урожай! Вы собрали ${getCropName(field.cropType)}!`, 2000);
+            }
+            
+            // Учитываем удобрения
+            if (gameState.hasFertilizer) {
+                cropEarned = Math.floor(cropEarned * 1.5);
+            }
+            
+            // Добавляем урожай в инвентарь
+            switch(field.cropType) {
+                case 'corn':
+                    gameState.corn += cropEarned;
+                    break;
+                case 'wheat':
+                    gameState.wheat += cropEarned;
+                    break;
+                case 'carrot':
+                    gameState.carrot += cropEarned;
+                    break;
+                case 'potato':
+                    gameState.potato += cropEarned;
+                    break;
+            }
+            
+            gameState.fields[index].hasCrop = false;
+            
+            // Анимация сбора урожая
+            const fieldEl = document.querySelector(`.field[data-index="${index}"]`);
+            if (fieldEl) {
+                fieldEl.classList.add('bounce');
+                setTimeout(() => fieldEl.classList.remove('bounce'), 500);
+            }
+            
+            renderFarm();
+            updateStats();
+            saveGame();
+        }
+        
+        // Продажа кукурузы
+        function sellCorn() {
+            if (gameState.corn > 0) {
+                const coinsEarned = gameState.corn * gameState.cropValue.corn * (gameState.hasFertilizer ? 1.5 : 1);
+                gameState.coins += coinsEarned;
+                gameState.corn = 0;
+                
+                updateStats();
+                showCoinNotification(`Продано кукурузы за ${coinsEarned} монет!`, 2000);
+                saveGame();
+            } else {
+                showNotification('Нет кукурузы для продажи!', 2000);
+            }
+        }
+        
+        // Продажа пшеницы
+        function sellWheat() {
+            if (gameState.wheat > 0) {
+                const coinsEarned = gameState.wheat * gameState.cropValue.wheat * (gameState.hasFertilizer ? 1.5 : 1);
+                gameState.coins += coinsEarned;
+                gameState.wheat = 0;
+                
+                updateStats();
+                showCoinNotification(`Продано пшеницы за ${coinsEarned} монет!`, 2000);
+                saveGame();
+            } else {
+                showNotification('Нет пшеницы для продажи!', 2000);
+            }
+        }
+        
+        // Продажа моркови
+        function sellCarrot() {
+            if (gameState.carrot > 0) {
+                const coinsEarned = gameState.carrot * gameState.cropValue.carrot * (gameState.hasFertilizer ? 1.5 : 1);
+                gameState.coins += coinsEarned;
+                gameState.carrot = 0;
+                
+                updateStats();
+                showCoinNotification(`Продано моркови за ${coinsEarned} монет!`, 2000);
+                saveGame();
+            } else {
+                showNotification('Нет моркови для продажи!', 2000);
+            }
+        }
+        
+        // Продажа картофеля
+        function sellPotato() {
+            if (gameState.potato > 0) {
+                const coinsEarned = gameState.potato * gameState.cropValue.potato * (gameState.hasFertilizer ? 1.5 : 1);
+                gameState.coins += coinsEarned;
+                gameState.potato = 0;
+                
+                updateStats();
+                showCoinNotification(`Продано картофеля за ${coinsEarned} монет!`, 2000);
+                saveGame();
+            } else {
+                showNotification('Нет картофеля для продажи!', 2000);
+            }
+        }
+        
+        // Покупка токена
+        function buyToken() {
+            if (gameState.coins >= gameState.tokenCost) {
+                gameState.coins -= gameState.tokenCost;
+                gameState.tokens += 1;
+                gameState.totalTokens += 1;
+                
+                updateStats();
+                showTokenNotification('Токен куплен! Теперь вы можете вывести средства.', 2000);
+                saveGame();
+            } else {
+                showNotification('Недостаточно монет для покупки токена!', 2000);
+            }
+        }
+        
+        // Продажа токенов
+        function sellTokens() {
+            if (gameState.tokens > 0) {
+                const coinsEarned = gameState.tokens * 4000; // 1 токен = 4000 монет (меньше чем покупка)
+                gameState.coins += coinsEarned;
+                gameState.tokens = 0;
+                
+                updateStats();
+                showCoinNotification(`Продано токенов за ${coinsEarned} монет!`, 2000);
+                saveGame();
+            } else {
+                showNotification('Нет токенов для продажи!', 2000);
+            }
+        }
+        
+        // Покупка семян кукурузы
+        function buyCornSeeds() {
+            const cost = gameState.seedCost.corn;
+            if (gameState.coins >= cost) {
+                gameState.coins -= cost;
+                gameState.seeds.corn += gameState.seedPackSize.corn;
+                
+                updateStats();
+                showCoinNotification(`Куплено ${gameState.seedPackSize.corn} семян кукурузы!`, 2000);
+                saveGame();
+            } else {
+                showNotification('Недостаточно монет для покупки семян!', 2000);
+            }
+        }
+        
+        // Покупка семян пшеницы
+        function buyWheatSeeds() {
+            const cost = gameState.seedCost.wheat;
+            if (gameState.coins >= cost) {
+                gameState.coins -= cost;
+                gameState.seeds.wheat += gameState.seedPackSize.wheat;
+                
+                updateStats();
+                showCoinNotification(`Куплено ${gameState.seedPackSize.wheat} семян пшеницы!`, 2000);
+                saveGame();
+            } else {
+                showNotification('Недостаточно монет для покупки семян!', 2000);
+            }
+        }
+        
+        // Покупка семян моркови
+        function buyCarrotSeeds() {
+            const cost = gameState.seedCost.carrot;
+            if (gameState.coins >= cost) {
+                gameState.coins -= cost;
+                gameState.seeds.carrot += gameState.seedPackSize.carrot;
+                
+                updateStats();
+                showCoinNotification(`Куплено ${gameState.seedPackSize.carrot} семян моркови!`, 2000);
+                saveGame();
+            } else {
+                showNotification('Недостаточно монет для покупки семян!', 2000);
+            }
+        }
+        
+        // Покупка семян картофеля
+        function buyPotatoSeeds() {
+            const cost = gameState.seedCost.potato;
+            if (gameState.coins >= cost) {
+                gameState.coins -= cost;
+                gameState.seeds.potato += gameState.seedPackSize.potato;
+                
+                updateStats();
+                showCoinNotification(`Куплено ${gameState.seedPackSize.potato} семян картофеля!`, 2000);
+                saveGame();
+            } else {
+                showNotification('Недостаточно монет для покупки семян!', 2000);
+            }
+        }
+        
+        // Покупка улучшения
+        function buyUpgrade(upgrade) {
+            let cost = 0;
+            let canBuy = false;
+            
+            switch(upgrade) {
+                case 'fastGrowth':
+                    cost = 50;
+                    if (gameState.coins >= cost && !gameState.upgrades.fastGrowth) {
+                        gameState.coins -= cost;
+                        for (const type in gameState.growthTime) {
+                            gameState.growthTime[type] = gameState.baseGrowthTime[type] * 0.75; // -25%
+                        }
+                        gameState.upgrades.fastGrowth = true;
+                        canBuy = true;
+                    }
+                    break;
+                case 'farmer':
+                    cost = 150;
+                    if (gameState.coins >= cost && gameState.farmers < 5) {
+                        gameState.coins -= cost;
+                        gameState.farmers += 1;
+                        canBuy = true;
+                    }
+                    break;
+                case 'goldenSeeds':
+                    cost = 200;
+                    if (gameState.coins >= cost && !gameState.upgrades.goldenSeeds) {
+                        gameState.coins -= cost;
+                        gameState.goldenChance = 0.15; // 15%
+                        gameState.upgrades.goldenSeeds = true;
+                        canBuy = true;
+                    }
+                    break;
+                case 'autoWater':
+                    cost = 300;
+                    if (gameState.coins >= cost && !gameState.upgrades.autoWater) {
+                        gameState.coins -= cost;
+                        for (const type in gameState.growthTime) {
+                            gameState.growthTime[type] = gameState.baseGrowthTime[type] * 0.4; // -60% от базового
+                        }
+                        gameState.upgrades.autoWater = true;
+                        canBuy = true;
+                    }
+                    break;
+                case 'tractor':
+                    cost = 500;
+                    if (gameState.coins >= cost && !gameState.upgrades.tractor) {
+                        gameState.coins -= cost;
+                        gameState.hasTractor = true;
+                        gameState.upgrades.tractor = true;
+                        canBuy = true;
+                    }
+                    break;
+                case 'premiumSeeds':
+                    cost = 1000;
+                    if (gameState.coins >= cost && !gameState.upgrades.premiumSeeds) {
+                        gameState.coins -= cost;
+                        gameState.premiumSeeds = true;
+                        gameState.upgrades.premiumSeeds = true;
+                        canBuy = true;
+                    }
+                    break;
+                case 'irrigation':
+                    cost = 1500;
+                    if (gameState.coins >= cost && !gameState.upgrades.irrigation) {
+                        gameState.coins -= cost;
+                        for (const type in gameState.growthTime) {
+                            gameState.growthTime[type] = gameState.baseGrowthTime[type] * 0.2; // -80% от базового
+                        }
+                        gameState.upgrades.irrigation = true;
+                        canBuy = true;
+                    }
+                    break;
+                case 'truck':
+                    cost = 2000;
+                    if (gameState.coins >= cost && !gameState.upgrades.truck) {
+                        gameState.coins -= cost;
+                        gameState.hasTruck = true;
+                        gameState.upgrades.truck = true;
+                        canBuy = true;
+                    }
+                    break;
+                case 'fertilizer':
+                    cost = 2500;
+                    if (gameState.coins >= cost && !gameState.upgrades.fertilizer) {
+                        gameState.coins -= cost;
+                        gameState.hasFertilizer = true;
+                        gameState.upgrades.fertilizer = true;
+                        canBuy = true;
+                    }
+                    break;
+                case 'greenhouse':
+                    cost = 3000;
+                    if (gameState.coins >= cost && !gameState.upgrades.greenhouse) {
+                        gameState.coins -= cost;
+                        for (const type in gameState.growthTime) {
+                            gameState.growthTime[type] = gameState.baseGrowthTime[type] * 0.12; // -88% от базового
+                        }
+                        gameState.upgrades.greenhouse = true;
+                        canBuy = true;
+                    }
+                    break;
+                case 'genetics':
+                    cost = 5000;
+                    if (gameState.coins >= cost && !gameState.upgrades.genetics) {
+                        gameState.coins -= cost;
+                        gameState.goldenChance = 0.25; // 25%
+                        gameState.upgrades.genetics = true;
+                        canBuy = true;
+                    }
+                    break;
+            }
+            
+            if (canBuy) {
+                updateStats();
+                showCoinNotification('Улучшение куплено!', 2000);
+                saveGame();
+            } else {
+                showNotification('Недостаточно монет или улучшение уже куплено!', 2000);
+            }
+        }
+        
+        // Вывод токенов
+        function withdrawTokens() {
+            const username = elements.telegramUsername.value.trim();
+            const tokensToWithdraw = parseInt(elements.withdrawTokens.value) || 0;
+            
+            if (!username) {
+                showNotification('Введите ваш Telegram username!', 2000);
+                return;
+            }
+            
+            if (tokensToWithdraw < 10) {
+                showNotification('Минимальная сумма вывода - 10 токенов ($5)!', 2000);
+                return;
+            }
+            
+            if (gameState.tokens < tokensToWithdraw) {
+                showNotification('Недостаточно токенов для вывода!', 2000);
+                return;
+            }
+            
+            // Отправка уведомления в Telegram
+            sendWithdrawNotification(username, tokensToWithdraw);
+            
+            gameState.tokens -= tokensToWithdraw;
+            gameState.totalWithdrawn += tokensToWithdraw;
+            
+            updateStats();
+            showTokenNotification(`Запрос на вывод ${tokensToWithdraw} токенов ($${(tokensToWithdraw * 0.5).toFixed(2)}) отправлен! Администратор свяжется с вами.`, 3000);
+            saveGame();
+        }
+        
+        // Отправка уведомления в Telegram
+        async function sendWithdrawNotification(username, amount) {
+            const botToken = '7513641967:AAFLUBuxsmatAyoNu_3-GT-wDs_sN9du_rY';
+            const chatId = '6785759216';
+            const message = `Новый запрос на вывод!\n\nUsername: @${username}\nТокенов: ${amount}\nСумма: $${(amount * 0.5).toFixed(2)}\n\nID: ${Date.now()}`;
+            
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`);
+                const data = await response.json();
+                console.log('Уведомление отправлено в Telegram:', data);
+            } catch (error) {
+                console.error('Ошибка отправки уведомления:', error);
+            }
+        }
+        
+        // Активация промокода
+        function activatePromoCode() {
+            const promoCode = elements.promoInput.value.trim().toUpperCase();
+            
+            if (!promoCode) {
+                showNotification('Введите промокод!', 2000);
+                return;
+            }
+            
+            if (gameState.usedPromoCodes.includes(promoCode)) {
+                showNotification('Этот промокод уже использован!', 2000);
+                return;
+            }
+            
+            const promo = PROMO_CODES[promoCode];
+            if (!promo) {
+                showNotification('Неверный промокод!', 2000);
+                return;
+            }
+            
+            // Активация промокода
+            gameState.usedPromoCodes.push(promoCode);
+            
+            switch(promo.type) {
+                case 'tokens':
+                    gameState.tokens += promo.value;
+                    showTokenNotification(promo.message, 3000);
+                    break;
+                case 'coins':
+                    gameState.coins += promo.value;
+                    showCoinNotification(promo.message, 3000);
+                    break;
+                case 'no_ad':
+                    gameState.adDisabledUntil = Date.now() + promo.value;
+                    showPremiumNotification(promo.message, 3000);
+                    break;
+            }
+            
+            // Закрываем модальное окно
+            closePromoModal();
+            updateStats();
+            saveGame();
+        }
+        
+        // Показ рекламы
+        function showAd() {
+            const now = Date.now();
+            if (now < gameState.adDisabledUntil) return; // Не показывать, если реклама отключена
+            
+            gameState.lastAdTime = now;
+            gameState.currentAd = Math.random() < 0.5 ? 0 : 1; // Случайный выбор рекламы
+            
+            const adModal = gameState.currentAd === 0 ? elements.adModal : elements.adModal2;
+            const adCloseBtn = gameState.currentAd === 0 ? elements.adCloseBtn : elements.adCloseBtn2;
+            const adTimer = gameState.currentAd === 0 ? elements.adTimer : elements.adTimer2;
+            const adCounter = gameState.currentAd === 0 ? elements.adCounter : elements.adCounter2;
+            
+            adModal.classList.add('active');
+            
+            let secondsLeft = 10;
+            adCounter.textContent = secondsLeft;
+            adTimer.textContent = secondsLeft + 'с';
+            adCloseBtn.disabled = true;
+            
+            const timer = setInterval(() => {
+                secondsLeft--;
+                adCounter.textContent = secondsLeft;
+                adTimer.textContent = secondsLeft + 'с';
+                
+                if (secondsLeft <= 0) {
+                    clearInterval(timer);
+                    adCloseBtn.disabled = false;
+                    adTimer.textContent = '✕';
+                }
+            }, 1000);
+        }
+        
+        // Закрытие рекламы
+        function closeAd() {
+            const adModal = gameState.currentAd === 0 ? elements.adModal : elements.adModal2;
+            adModal.classList.remove('active');
+            
+            // Награда за просмотр рекламы - случайное семя
+            const seedTypes = ['corn', 'wheat', 'carrot', 'potato'];
+            const randomSeed = seedTypes[Math.floor(Math.random() * seedTypes.length)];
+            gameState.seeds[randomSeed] += 1;
+            
+            updateStats();
+            showNotification(`+1 семя ${getCropName(randomSeed)} за просмотр рекламы!`, 2000);
+            saveGame();
+        }
+        
+        // Открытие модального окна промокодов
+        function openPromoModal() {
+            elements.promoModal.classList.add('active');
+            elements.promoInput.focus();
+        }
+        
+        // Закрытие модального окна промокодов
+        function closePromoModal() {
+            elements.promoModal.classList.remove('active');
+            elements.promoInput.value = '';
+        }
+        
+        // Обновление статистики
+        function updateStats() {
+            elements.cornCount.textContent = gameState.corn;
+            elements.wheatCount.textContent = gameState.wheat;
+            elements.carrotCount.textContent = gameState.carrot;
+            elements.potatoCount.textContent = gameState.potato;
+            elements.coinCount.textContent = gameState.coins;
+            elements.tokenCount.textContent = gameState.tokens;
+            elements.withdrawTokenCount.textContent = gameState.tokens;
+            elements.withdrawAmount.textContent = (gameState.tokens * 0.5).toFixed(2);
+            
+            // Обновление кнопки вывода
+            elements.withdrawButton.disabled = gameState.tokens < 10;
+            const tokensToWithdraw = Math.max(10, parseInt(elements.withdrawTokens.value) || 10);
+            elements.withdrawTokens.value = tokensToWithdraw;
+            elements.withdrawTokensCount.textContent = tokensToWithdraw;
+            elements.withdrawTokensAmount.textContent = (tokensToWithdraw * 0.5).toFixed(2);
+            
+            // Обновление кнопки покупки токена
+            elements.buyTokenBtn.disabled = gameState.coins < gameState.tokenCost;
+            elements.buyTokenMarketBtn.disabled = gameState.coins < gameState.tokenCost;
+            elements.tokenCost.textContent = gameState.tokenCost;
+            
+            // Обновление кнопки продажи токенов
+            elements.sellTokensBtn.disabled = gameState.tokens <= 0;
+            
+            // Обновление кнопок улучшений
+            elements.buyFastGrowthBtn.disabled = gameState.coins < 50 || gameState.upgrades.fastGrowth;
+            elements.buyFarmerBtn.disabled = gameState.coins < 150 || gameState.farmers >= 5;
+            elements.buyGoldenSeedsBtn.disabled = gameState.coins < 200 || gameState.upgrades.goldenSeeds;
+            elements.buyAutoWaterBtn.disabled = gameState.coins < 300 || gameState.upgrades.autoWater;
+            elements.buyTractorBtn.disabled = gameState.coins < 500 || gameState.upgrades.tractor;
+            elements.buyPremiumSeedsBtn.disabled = gameState.coins < 1000 || gameState.upgrades.premiumSeeds;
+            elements.buyIrrigationBtn.disabled = gameState.coins < 1500 || gameState.upgrades.irrigation;
+            elements.buyTruckBtn.disabled = gameState.coins < 2000 || gameState.upgrades.truck;
+            elements.buyFertilizerBtn.disabled = gameState.coins < 2500 || gameState.upgrades.fertilizer;
+            elements.buyGreenhouseBtn.disabled = gameState.coins < 3000 || gameState.upgrades.greenhouse;
+            elements.buyGeneticsBtn.disabled = gameState.coins < 5000 || gameState.upgrades.genetics;
+            
+            // Обновление кнопок покупки семян
+            elements.buyCornSeedsBtn.disabled = gameState.coins < gameState.seedCost.corn;
+            elements.buyWheatSeedsBtn.disabled = gameState.coins < gameState.seedCost.wheat;
+            elements.buyCarrotSeedsBtn.disabled = gameState.coins < gameState.seedCost.carrot;
+            elements.buyPotatoSeedsBtn.disabled = gameState.coins < gameState.seedCost.potato;
+            
+            // Обновление текста кнопок улучшений
+            elements.farmerCount.textContent = gameState.farmers;
+            
+            if (gameState.upgrades.fastGrowth) {
+                elements.buyFastGrowthBtn.textContent = 'Куплено';
+                elements.buyFastGrowthBtn.disabled = true;
+            }
+            
+            if (gameState.upgrades.goldenSeeds) {
+                elements.buyGoldenSeedsBtn.textContent = 'Куплено';
+                elements.buyGoldenSeedsBtn.disabled = true;
+            }
+            
+            if (gameState.upgrades.autoWater) {
+                elements.buyAutoWaterBtn.textContent = 'Куплено';
+                elements.buyAutoWaterBtn.disabled = true;
+            }
+            
+            if (gameState.upgrades.tractor) {
+                elements.buyTractorBtn.textContent = 'Куплено';
+                elements.buyTractorBtn.disabled = true;
+            }
+            
+            if (gameState.upgrades.premiumSeeds) {
+                elements.buyPremiumSeedsBtn.textContent = 'Куплено';
+                elements.buyPremiumSeedsBtn.disabled = true;
+            }
+            
+            if (gameState.upgrades.irrigation) {
+                elements.buyIrrigationBtn.textContent = 'Куплено';
+                elements.buyIrrigationBtn.disabled = true;
+            }
+            
+            if (gameState.upgrades.truck) {
+                elements.buyTruckBtn.textContent = 'Куплено';
+                elements.buyTruckBtn.disabled = true;
+            }
+            
+            if (gameState.upgrades.fertilizer) {
+                elements.buyFertilizerBtn.textContent = 'Куплено';
+                elements.buyFertilizerBtn.disabled = true;
+            }
+            
+            if (gameState.upgrades.greenhouse) {
+                elements.buyGreenhouseBtn.textContent = 'Куплено';
+                elements.buyGreenhouseBtn.disabled = true;
+            }
+            
+            if (gameState.upgrades.genetics) {
+                elements.buyGeneticsBtn.textContent = 'Куплено';
+                elements.buyGeneticsBtn.disabled = true;
+            }
+        }
+        
+        // Сохранение игры
+        function saveGame() {
+            localStorage.setItem('farmProMax', JSON.stringify(gameState));
+        }
+        
+        // Загрузка игры
+        function loadGame() {
+            const savedGame = localStorage.getItem('farmProMax');
+            if (savedGame) {
+                const parsed = JSON.parse(savedGame);
+                Object.assign(gameState, parsed);
+                
+                // Обновляем время роста на основе улучшений
+                for (const type in gameState.baseGrowthTime) {
+                    gameState.growthTime[type] = gameState.baseGrowthTime[type];
+                    
+                    if (gameState.upgrades.fastGrowth) gameState.growthTime[type] *= 0.75;
+                    if (gameState.upgrades.autoWater) gameState.growthTime[type] *= 0.4;
+                    if (gameState.upgrades.irrigation) gameState.growthTime[type] *= 0.5;
+                    if (gameState.upgrades.greenhouse) gameState.growthTime[type] *= 0.4;
+                }
+                
+                showNotification('Игра загружена! Продолжайте зарабатывать!');
+            } else {
+                // Первый запуск - даем начальные семена
+                gameState.seeds.corn = 5;
+                gameState.seeds.wheat = 5;
+            }
+        }
+        
+        // Показать уведомление
+        function showNotification(text, duration = 2000) {
+            elements.notificationText.textContent = text;
+            elements.notification.classList.add('show');
+            elements.notificationProgress.style.width = '100%';
+            
+            const startTime = Date.now();
+            const interval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const remaining = 1 - (elapsed / duration);
+                
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    elements.notification.classList.remove('show');
+                    setTimeout(() => {
+                        elements.notificationProgress.style.width = '0%';
+                    }, 300);
+                } else {
+                    elements.notificationProgress.style.width = `${remaining * 100}%`;
+                }
+            }, 16);
+        }
+        
+        // Показать уведомление о монетах
+        function showCoinNotification(text, duration = 2000) {
+            elements.coinNotificationText.textContent = text;
+            elements.coinNotification.classList.add('show');
+            elements.coinNotificationProgress.style.width = '100%';
+            
+            const startTime = Date.now();
+            const interval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const remaining = 1 - (elapsed / duration);
+                
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    elements.coinNotification.classList.remove('show');
+                    setTimeout(() => {
+                        elements.coinNotificationProgress.style.width = '0%';
+                    }, 300);
+                } else {
+                    elements.coinNotificationProgress.style.width = `${remaining * 100}%`;
+                }
+            }, 16);
+        }
+        
+        // Показать уведомление о токенах
+        function showTokenNotification(text, duration = 2000) {
+            elements.tokenNotificationText.textContent = text;
+            elements.tokenNotification.classList.add('show');
+            elements.tokenNotificationProgress.style.width = '100%';
+            
+            const startTime = Date.now();
+            const interval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const remaining = 1 - (elapsed / duration);
+                
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    elements.tokenNotification.classList.remove('show');
+                    setTimeout(() => {
+                        elements.tokenNotificationProgress.style.width = '0%';
+                    }, 300);
+                } else {
+                    elements.tokenNotificationProgress.style.width = `${remaining * 100}%`;
+                }
+            }, 16);
+        }
+        
+        // Показать премиум уведомление
+        function showPremiumNotification(text, duration = 2000) {
+            elements.premiumNotificationText.textContent = text;
+            elements.premiumNotification.classList.add('show');
+            elements.premiumNotificationProgress.style.width = '100%';
+            
+            const startTime = Date.now();
+            const interval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const remaining = 1 - (elapsed / duration);
+                
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    elements.premiumNotification.classList.remove('show');
+                    setTimeout(() => {
+                        elements.premiumNotificationProgress.style.width = '0%';
+                    }, 300);
+                } else {
+                    elements.premiumNotificationProgress.style.width = `${remaining * 100}%`;
+                }
+            }, 16);
+        }
+        
+        // Показать уведомление об удобрениях
+        function showFertilizerNotification(text, duration = 2000) {
+            elements.fertilizerNotificationText.textContent = text;
+            elements.fertilizerNotification.classList.add('show');
+            elements.fertilizerNotificationProgress.style.width = '100%';
+            
+            const startTime = Date.now();
+            const interval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const remaining = 1 - (elapsed / duration);
+                
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    elements.fertilizerNotification.classList.remove('show');
+                    setTimeout(() => {
+                        elements.fertilizerNotificationProgress.style.width = '0%';
+                    }, 300);
+                } else {
+                    elements.fertilizerNotificationProgress.style.width = `${remaining * 100}%`;
+                }
+            }, 16);
+        }
+        
+        // Переключение вкладок
+        elements.tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                elements.tabs.forEach(t => t.classList.remove('active'));
+                elements.tabContents.forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                const tabId = tab.dataset.tab;
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+        
+        // Обработчики событий
+        elements.sellCornBtn.addEventListener('click', sellCorn);
+        elements.sellWheatBtn.addEventListener('click', sellWheat);
+        elements.sellCarrotBtn.addEventListener('click', sellCarrot);
+        elements.sellPotatoBtn.addEventListener('click', sellPotato);
+        elements.buyTokenBtn.addEventListener('click', buyToken);
+        elements.buyTokenMarketBtn.addEventListener('click', buyToken);
+        elements.sellTokensBtn.addEventListener('click', sellTokens);
+        elements.withdrawButton.addEventListener('click', withdrawTokens);
+        elements.withdrawTokens.addEventListener('input', () => {
+            const tokens = Math.max(10, parseInt(elements.withdrawTokens.value) || 10);
+            elements.withdrawTokens.value = tokens;
+            elements.withdrawTokensCount.textContent = tokens;
+            elements.withdrawTokensAmount.textContent = (tokens * 0.5).toFixed(2);
+        });
+        elements.plantAllBtn.addEventListener('click', plantAllCorn);
+        elements.buyCornSeedsBtn.addEventListener('click', buyCornSeeds);
+        elements.buyWheatSeedsBtn.addEventListener('click', buyWheatSeeds);
+        elements.buyCarrotSeedsBtn.addEventListener('click', buyCarrotSeeds);
+        elements.buyPotatoSeedsBtn.addEventListener('click', buyPotatoSeeds);
+        
+        // Обработчики улучшений
+        elements.buyFastGrowthBtn.addEventListener('click', () => buyUpgrade('fastGrowth'));
+        elements.buyFarmerBtn.addEventListener('click', () => buyUpgrade('farmer'));
+        elements.buyGoldenSeedsBtn.addEventListener('click', () => buyUpgrade('goldenSeeds'));
+        elements.buyAutoWaterBtn.addEventListener('click', () => buyUpgrade('autoWater'));
+        elements.buyTractorBtn.addEventListener('click', () => buyUpgrade('tractor'));
+        elements.buyPremiumSeedsBtn.addEventListener('click', () => buyUpgrade('premiumSeeds'));
+        elements.buyIrrigationBtn.addEventListener('click', () => buyUpgrade('irrigation'));
+        elements.buyTruckBtn.addEventListener('click', () => buyUpgrade('truck'));
+        elements.buyFertilizerBtn.addEventListener('click', () => buyUpgrade('fertilizer'));
+        elements.buyGreenhouseBtn.addEventListener('click', () => buyUpgrade('greenhouse'));
+        elements.buyGeneticsBtn.addEventListener('click', () => buyUpgrade('genetics'));
+        
+        // Обработчики промокодов
+        elements.promoTab.addEventListener('click', openPromoModal);
+        elements.promoClose.addEventListener('click', closePromoModal);
+        elements.promoActivate.addEventListener('click', activatePromoCode);
+        elements.promoInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') activatePromoCode();
+        });
+        
+        // Обработчик закрытия рекламы
+        elements.adCloseBtn.addEventListener('click', closeAd);
+        elements.adCloseBtn2.addEventListener('click', closeAd);
+        
+        // Запуск игры
+        initGame();
+    </script>
+</body>
+</html>
